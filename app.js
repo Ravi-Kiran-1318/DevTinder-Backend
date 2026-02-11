@@ -1,24 +1,39 @@
 const express=require('express');
+const connectDB=require('./config/database');
 const app=express();
 
+const User=require("./models/user")
 
-app.get("/getUserDetails",(req,res)=>{
+app.post("/signup", async(req,res)=>{
+
+    console.log("Signup route hit");
+    const user=new User({
+        firstName:"Aditya",
+        lastName:"Batchu",
+        email:"adityabatchu@gmail.com",
+        password:"123456",
+        age:22,
+        gender:"Male"
+    })
     try{
-        //Logic to get user details and get user data
-        throw new Error("Failed to fetch user details");
-        res.send("User details fetched successfully");
-    }catch(error){
-        res.status(500).json({message:error.message});
-    }  
+        await user.save();
+        res.send("User created successfully");
+    }
+    catch(error){
+        console.error("Error creating user:", error);
+        res.status(500).send("Error creating user");
+    }   
+}) 
+
+app.use("/",(req,res)=>{
+    res.send("Welcome to DevTinder");
 })
 
-app.use("/", (err, req, res, next)=>{
-    console.error(err.stack);
-    res.status(500).send("Something went wrong!");
-})
-
-    
-
-app.listen(7777,()=>{
+connectDB().then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(7777,()=>{
     console.log("Server is running on port 7777");
+});
+}).catch((error) => {        
+    console.error('Failed to connect to MongoDB:', error);
 });
