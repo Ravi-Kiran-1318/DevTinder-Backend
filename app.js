@@ -6,8 +6,6 @@ const User=require("./models/user");
 
 app.use(express.json());
 
-
-
 app.post("/signup", async(req,res)=>{
 
     console.log("Signup route hit");
@@ -21,6 +19,34 @@ app.post("/signup", async(req,res)=>{
         res.status(500).send("Error creating user");
     }   
 }) 
+
+//get user by email
+app.get("/user",async(req,res)=>{
+    const userEmail=req.body.emailId;
+    try{
+        const users=await User.find({emailId:userEmail});
+        if(users.length===0){
+            res.status(404).send("User not found");
+        }
+        else{
+            res.send(users);
+        }
+    }catch(error){
+        console.error("Error fetching user:", error);
+        res.status(500).send("Error fetching user");
+    }
+});
+
+//Feed/get - get all the users in the database
+app.get("/feed",async(req,res)=>{
+    try{
+        const users=await User.find({});
+        res.send(users);
+    }catch(error){
+        console.error("Error in feed route:", error);   
+        res.status(500).send("Error in feed route");
+    }
+});
 
 app.use("/",(req,res)=>{
     res.send("Welcome to DevTinder");
