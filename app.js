@@ -2,19 +2,16 @@ const express=require('express');
 const connectDB=require('./config/database');
 const app=express();
 
-const User=require("./models/user")
+const User=require("./models/user");
+
+app.use(express.json());
+
+
 
 app.post("/signup", async(req,res)=>{
 
     console.log("Signup route hit");
-    const user=new User({
-        firstName:"Aditya",
-        lastName:"Batchu",
-        email:"adityabatchu@gmail.com",
-        password:"123456",
-        age:22,
-        gender:"Male"
-    })
+    const user=new User(req.body);
     try{
         await user.save();
         res.send("User created successfully");
