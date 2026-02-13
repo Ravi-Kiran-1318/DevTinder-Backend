@@ -37,6 +37,23 @@ app.get("/user",async(req,res)=>{
     }
 });
 
+//getting user by id
+app.get("/user/:id",async(req,res)=>{
+    const userId=req.params.id;
+    try{
+        const users=await User.findById(userId);
+        if(!users){
+            res.status(404).send("User not found");
+        }
+        else{
+            res.send(users);
+        }
+    }catch(error){
+        console.error("Error fetching user:", error);
+        res.status(500).send("Error fetching user");
+    }
+});
+
 //Feed/get - get all the users in the database
 app.get("/feed",async(req,res)=>{
     try{
@@ -48,9 +65,47 @@ app.get("/feed",async(req,res)=>{
     }
 });
 
+//deleting a user by id
+app.delete('/user', async (req, res) => {
+    const userId = req.body.userId;
+    try {
+
+        // const user = await User.findByIdAndDelete({_id:userId});
+
+        const user = await User.findByIdAndDelete(userId);
+        if (!user) {
+            res.status(404).send("User not found");
+        } else {
+            res.send("User deleted successfully");
+        }
+    } 
+    catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).send("Error deleting user");
+    }
+});
+
+//updating a user by id
+app.patch('/user', async (req, res) => {
+    const userId = req.body.userId;
+    const Data = req.body;
+    try {
+        const user = await User.findByIdAndUpdate(userId, Data, { returnDocument: 'after' });
+        console.log("Updated user:", user);
+        if (!user) {
+            res.status(404).send("User not found");
+        } else {
+            res.send(user);
+        }
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send("Error updating user");
+    }
+});
+
 app.use("/",(req,res)=>{
     res.send("Welcome to DevTinder");
-})
+})  
 
 connectDB().then(() => {
     console.log('Connected to MongoDB');
