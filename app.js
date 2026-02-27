@@ -56,7 +56,7 @@ app.post("/login", async(req,res)=>{
 
             //Add the token to the cookie and send the response back to the client
 
-            res.cookie("token", token,{expires:new Date(Date.now() + 16 0*3600000), httpOnly:true});  
+            res.cookie("token", token,{expires:new Date(Date.now() + 160*3600000), httpOnly:true});  
             res.send("Login successful");
 
         } 
