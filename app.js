@@ -16,7 +16,7 @@ app.post("/signup", async(req,res)=>{
     }
     catch(error){
         console.error("Error creating user:", error);
-        res.status(500).send("Error creating user");
+        res.status(500).send("Error creating user: " + error.message);
     }   
 }) 
 
@@ -90,16 +90,16 @@ app.patch('/user', async (req, res) => {
     const userId = req.body.userId;
     const Data = req.body;
     try {
-        const user = await User.findByIdAndUpdate(userId, Data, { returnDocument: 'after' });
-        console.log("Updated user:", user);
+        const user = await User.findByIdAndUpdate(userId, Data, { returnDocument: 'after', runValidators: true });
+        // console.log("Updated user:", user);
         if (!user) {
             res.status(404).send("User not found");
         } else {
-            res.send(user);
+            res.send("User updated successfully");
         }
     } catch (error) {
-        console.error("Error updating user:", error);
-        res.status(500).send("Error updating user");
+        console.error("Error updating user:", error);   
+        res.status(500).send("Error updating user: " + error.message);
     }
 });
 
