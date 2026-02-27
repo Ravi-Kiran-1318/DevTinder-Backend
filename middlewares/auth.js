@@ -1,19 +1,30 @@
-const adminAuth=(req, res, next) => {
-    const token="xyz";
-    const authHeader=token==="xyz";
-    if(!authHeader){
-        return res.status(401).json({message:"Unauthorized access"});
+const jwt=require('jsonwebtoken');  
+const User=require("../models/user");
+
+const userAuth=async (req, res, next) => {
+
+    try{
+        const {token}=req.cookies;
+        if(!token){
+            throw new Error("Invalid token");
+        }
+
+        const decodeObj= await jwt.verify(token,"your_jwt_secret_key");
+
+        const userId=decodeObj.userId;
+
+        const user= await User.findById(userId);
+
+        if(!user){
+            throw new Error("User does not exist");
+        }
+
+        req.user=user;
+        next();
     }
-    next();
+    catch(error){
+        res.status(401).send("Authentication failed: " + error.message);
+    }
 }
 
-const userAuth=(req, res, next) => {
-    const token="xyz";
-    const authHeader=token==="xyz";
-    if(!authHeader){
-        return res.status(401).json({message:"Unauthorized user"});
-    }
-    next();
-}
-
-module.exports={adminAuth,userAuth};
+module.exports={userAuth};
