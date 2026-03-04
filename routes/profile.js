@@ -51,7 +51,7 @@ profileRouter.patch("/profile/edit", userAuth, async(req,res)=>{
 profileRouter.patch("/profile/password", userAuth, async(req,res)=>{
     try{
         const {emailId, currentPassword, newPassword} = req.body;
-        const user = await User.findOne({ emailId });
+        const user = req.user;
 
         if (!user) {
             return res.status(404).send("Invalid Credentials");

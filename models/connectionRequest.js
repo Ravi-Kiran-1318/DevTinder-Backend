@@ -1,20 +1,19 @@
 const mongoose=require("mongoose");
 
 const connectionRequestSchema=new mongoose.Schema({
-    senderId:{
+    fromUserId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
         required:true,
     },
-    receiverId:{
+    toUserId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required:true,
+        required:true,   
     },
     status:{
         type:String,
+        required:true,
         enum:["ignore", "interested", "accepted", "rejected"],
-        default:"pending",
+        message:`{VALUE} is incorrect status type`
     }
 },
 {
@@ -22,6 +21,15 @@ const connectionRequestSchema=new mongoose.Schema({
 }
 );
 
-const ConnectionRequest=mongoose.model("ConnectionRequest", connectionRequestSchema);
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
 
-module.exports=ConnectionRequest;
+connectionRequestSchema.pre("save", function () {
+
+  if (this.fromUserId.equals(this.toUserId)) {
+    throw new Error("Cannot send connection request to yourself");
+  }
+
+});
+const ConnectionRequestModel=mongoose.model("ConnectionRequest", connectionRequestSchema);
+
+module.exports=ConnectionRequestModel;
