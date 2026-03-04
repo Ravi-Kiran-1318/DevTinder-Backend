@@ -40,7 +40,7 @@ authRouter.post("/login", async(req,res)=>{
         if (!user) {
             return res.status(404).send("Invalid Credentials");
         }
-        
+
         const isPasswordValid = await user.validatePassword(password);
         
         if (isPasswordValid) {
@@ -56,6 +56,15 @@ authRouter.post("/login", async(req,res)=>{
         console.error("Error during login:", error);
         res.status(500).send("Error during login: " + error.message);
     }
+});
+
+
+authRouter.post("/logout", (req,res)=>{
+    // Set cookie to expire immediately
+    res.cookie("token", null,{
+        expires:new Date(Date.now())
+    }); 
+    res.send("Logged out successfully");
 });
 
 module.exports=authRouter;
